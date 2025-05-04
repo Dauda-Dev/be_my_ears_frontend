@@ -1,4 +1,4 @@
-const WEBSOCKET_URL = 'ws://192.168.183.49:8765'; // Replace with your IP or server
+const WEBSOCKET_URL = 'ws://192.168.190.49:8765'; // Replace with your IP or server
 
 let websocket: WebSocket | null = null;
 let isConnected = false;
@@ -35,10 +35,10 @@ export const connectWebSocket = (onMessage: (data: WebSocketMessage) => void) =>
 
   websocket.onmessage = (e: MessageEvent<string>) => {
     try {
-      console.log("🛬 Raw incoming data:", e.data);
+//       console.log("🛬 Raw incoming data:", e.data);
 
       const df: WebSocketMessage = JSON.parse(e.data);
-      console.log("✅ After parsing:", df);
+//       console.log("✅ After parsing:", df);
 
       if (df.transcription) {
         console.log("📝 Text:", df.transcription.text);

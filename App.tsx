@@ -55,13 +55,14 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar, Button } from 'react-native';
 import CameraFeed from './components/CameraFeed';
 import CameraOverlay from './components/Overlay';
 import TranscriptionBox from './components/TranscriptionBox';
 import { connectWebSocket } from './utils/websocket';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import TranscriptionFeed from './components/TranscriptionFeed';
+import LanguageSelectorModal from './components/LanguageSelectorModal';
 
 export default function App() {
   const [bboxes, setBboxes] = useState<any[]>([]);
@@ -69,6 +70,18 @@ export default function App() {
   const [isSending, setIsSending] = useState(false);
   const [messageReceived, setMessageReceived] = useState(false);
   const [transcriptions, setTranscriptions] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [transcribeLang, setTranscribeLang] = useState('en');
+  const [translateLang, setTranslateLang] = useState('English');
+
+  const handleLanguageSelect = (transcribe: string, translate: string) => {
+    console.log("selected languages: ", transcribe, translate)
+    setTranscribeLang(transcribe);
+    setTranslateLang(translate);
+    setModalVisible(false);
+  };
+
+
 
 
 
@@ -100,13 +113,24 @@ export default function App() {
 
 return (
   <View style={styles.container}>
-    <StatusBar hidden />
+//     <StatusBar />
+
+
+      <LanguageSelectorModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSelect={handleLanguageSelect}
+      />
     <CameraFeed
+      transcribeLang = {transcribeLang}
+      translateLang = {translateLang}
+      onLanguageSet={() => handleLanguageSelect}
       onRecordingStart={() => setIsRecording(true)}
       onRecordingStop={() => setIsRecording(false)}
       onSending={() => setIsSending(true)}
       onSent={() => setIsSending(false)}
     />
+     <Button title="Select Languages" onPress={() => setModalVisible(true)} />
     <TranscriptionFeed
       entries={transcriptions}
       recording={isRecording}

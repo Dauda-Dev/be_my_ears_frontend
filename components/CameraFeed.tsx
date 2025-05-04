@@ -5,11 +5,15 @@ import { View, ActivityIndicator, StyleSheet, Button, Text, TouchableOpacity } f
 import { sendAudioVideo } from '../utils/websocket';
 
 export default function CameraFeed({
+  transcribeLang,
+  translateLang,
   onRecordingStart,
   onRecordingStop,
   onSending,
   onSent
 }: {
+  transcribeLang: string;
+  translateLang: string;
   onRecordingStart: () => void;
   onRecordingStop: () => void;
   onSending: () => void;
@@ -20,15 +24,27 @@ export default function CameraFeed({
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
 
+  const transcribeLangRef = useRef(transcribeLang);
+  const translateLangRef = useRef(translateLang);
+
+
+  useEffect(() => {
+    transcribeLangRef.current = transcribeLang;
+    translateLangRef.current = translateLang;
+  }, [transcribeLang, translateLang]);
+
   useEffect(() => {
     const interval = setInterval(() => captureAndSend(), 25000);
     return () => clearInterval(interval);
   }, []);
 
+
+
   const captureAndSend = async () => {
     if (!cameraRef.current) return;
 
     try{
+        console.log('pef.......', transcribeLangRef.current, translateLangRef.current)
         onRecordingStart();
 
 
@@ -79,7 +95,9 @@ export default function CameraFeed({
           image: photo.base64,
           audio: audioBase64,
           image_width: photo.width,
-          image_height: photo.height
+          image_height: photo.height,
+          transcribe_lang: transcribeLangRef.current,   // ✅ Use ref
+          translate_lang: translateLangRef.current
         });
 
         onSent();
